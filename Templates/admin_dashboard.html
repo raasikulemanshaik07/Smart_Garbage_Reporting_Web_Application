@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Smart Garbage App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- 1. Global Design System --- */
+        :root {
+            --primary-green-dark: #006400;
+            --primary-green: #008000;
+            --accent-lime: #90D26D;
+            --accent-green-active: #2e7d32;
+            --background-light: #F7F9FC;
+            --card-background: #FFFFFF;
+            --text-dark: #212121;
+            --text-light: #757575;
+            --text-white: #FFFFFF;
+            --border-color: #E0E0E0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 6px 20px rgba(0,0,0,0.12);
+            --font-family: 'Poppins', 'Roboto', sans-serif;
+            --border-radius: 20px;
+            --transition-speed: 0.3s ease;
+        }
+
+        /* --- 2. Global Reset & Body --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { height: 100%; }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-light);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M23.2,74.3c3.9,2.4,8.6,3.4,13.5,2.9s9.5-2.6,13.5-6.3c3.8-3.5,6.9-7.9,8.9-12.8s2.9-10.2,2.5-15.3c-0.6-5-2.3-9.8-5.1-14.1c-2.9-4.4-6.8-8.1-11.5-10.9C39.1,15,33.1,13.6,27,14c-6.3,0.4-12.4,2.5-17.8,6.1c-5.2,3.5-9.5,8.3-12.5,14c-3.1,5.9-4.8,12.5-4.8,19.2c0,6.9,1.6,13.6,4.7,19.7c3,6,7.5,11.2,13,15.2C15.1,72,19.2,73.4,23.2,74.3z' fill='%23008000' fill-opacity='0.03'/%3E%3C/svg%3E");
+            background-size: 300px;
+        }
+
+        /* --- 3. Main App Structure (Nav, Main, Footer) --- */
+        .app-header {
+            width: 100%;
+            background: linear-gradient(90deg, var(--primary-green-dark) 0%, var(--primary-green) 100%);
+            color: var(--text-white);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 0 2rem;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-brand {
+            font-size: 1.15rem;
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--text-white);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--text-white);
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all var(--transition-speed);
+        }
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+        .nav-link.active {
+            background-color: var(--accent-lime);
+            color: var(--primary-green-dark);
+            font-weight: 700;
+        }
+        .nav-link svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+        .btn-logout-header {
+            background: none;
+            border: none;
+            color: var(--text-white);
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            transition: background-color var(--transition-speed), transform var(--transition-speed);
+            margin-left: 1rem;
+        }
+        .btn-logout-header:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+        .btn-logout-header svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--text-white);
+            display: block;
+        }
+        .mobile-menu-toggle {
+            display: none;
+        }
+
+        .app-content-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            padding: 2.5rem 1.5rem;
+        }
+        
+        main.app-content {
+            width: 100%;
+            max-width: 800px;
+            animation: fadeIn 0.4s var(--transition-speed) both;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .app-footer {
+            width: 100%;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            background-color: transparent;
+            border-top: 1px solid var(--border-color);
+            margin-top: 2rem;
+        }
+
+        /* --- 7. Page-Specific: Dashboard --- */
+        
+        .welcome-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        .page-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        
+        .action-card {
+            background: var(--card-background);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 2.5rem 2rem;
+            text-decoration: none;
+            color: var(--text-dark);
+            transition: all var(--transition-speed);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .action-card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-speed);
+            color: var(--text-white);
+        }
+        
+        .action-card--report {
+            --card-color: var(--primary-green);
+            --card-glow: rgba(0, 128, 0, 0.2);
+        }
+        .action-card--manage {
+            --card-color: #0288D1; /* Blue */
+            --card-glow: rgba(2, 136, 209, 0.2);
+        }
+        
+        .action-card-icon {
+            background-color: var(--card-color);
+        }
+        .action-card:hover {
+            border-color: var(--card-color);
+            box-shadow: 0 8px 20px var(--card-glow);
+        }
+        
+        .action-card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .action-card p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-header {
+                padding: 0 1rem;
+            }
+            .header-nav {
+                display: none; /* Hide full nav on mobile */
+            }
+            .mobile-menu-toggle {
+                display: block; /* Show hamburger icon */
+                position: absolute;
+                left: 1rem;
+            }
+            .header-brand {
+                padding-left: 44px; /* Space for hamburger */
+                padding-right: 0;
+                text-align: left;
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr; /* Stack on mobile */
+            }
+            .header-brand {
+                font-size: 1.05rem;
+            }
+            .page-title {
+                font-size: 1.75rem;
+            }
+            .page-subtitle {
+                font-size: 1rem;
+            }
+            .app-content-wrapper {
+                padding: 1.5rem 1rem;
+            }
+        }
+        
+        /* Mobile Nav */
+        .header-nav-mobile {
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            top: 64px;
+            left: 0;
+            width: 100%;
+            background: var(--card-background);
+            box-shadow: var(--shadow);
+            animation: slideDown 0.3s ease-out;
+            padding: 1rem 0;
+            z-index: 99;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .header-nav-mobile .nav-link {
+            color: var(--text-dark); /* Dark text on light bg */
+            padding: 1rem 1.5rem;
+            border-radius: 0;
+        }
+        .header-nav-mobile .nav-link.active {
+            background-color: var(--background-light);
+            color: var(--primary-green);
+        }
+        .header-nav-mobile .btn-logout-header {
+            margin: 1rem 1.5rem 0 1.5rem;
+            background: var(--primary-green);
+            color: var(--text-white);
+            padding: 12px;
+            border-radius: 8px;
+        }
+        .header-nav-mobile .btn-logout-header:hover {
+            background: var(--primary-green-dark);
+        }
+    </style>
+</head>
+<body id="body">
+    
+    <header class="app-header">
+        <a href="/admin_dashboard" class="header-brand">♻️ Smart Garbage Reporting</a>
+        
+        <!-- Desktop Navigation -->
+        <nav class="header-nav" id="desktop-nav">
+            <a href="/admin_dashboard" class="nav-link active" title="Dashboard">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80q-33 0-56.5-23.5T80-200v-480q0-21 10-38.5t27-28.5l360-280q18-14 43-14t43 14l360 280q17 11 27 28.5t10 38.5v480q0 33-23.5 56.5T800-120H160Zm320-350Z"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="/admin" class="nav-link" title="View Reports">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M280-280h80v-400h-80v400Zm160 0h80v-400h-80v400Zm160 0h80v-400h-80v400ZM160-120q-33 0-56.5-23.5T80-200v-560q0-33 23.5-56.5T160-840h640q33 0 56.5 23.5T880-760v560q0 33-23.5 56.5T800-120H160Zm0-80h640v-560H160v560Zm0 0v-560 560Z"/></svg>
+                <span>View Reports</span>
+            </a>
+            <a href="/manage_workers" class="nav-link" title="Manage Workers">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Z"/></svg>
+                <span>Manage Workers</span>
+            </a>
+            <a href="/admin_profile" class="nav-link" title="Profile">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Z"/></svg>
+                <span>Profile</span>
+            </a>
+            <a href="/admin_feedback" class="nav-link" title="Feedback">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M240-400h480v-80H240v80Zm0-120h480v-80H240v80Zm0-120h480v-80H240v80ZM80-80q-33 0-56.5-23.5T0-160v-640q0-33 23.5-56.5T80-880h800q33 0 56.5 23.5T960-800v640q0 33-23.5 56.5T880-80H80Z"/></svg>
+                <span>Feedback</span>
+            </a>
+            <button class="btn-logout-header" id="logout-button-header" title="Logout">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/></svg>
+            </button>
+        </nav>
+        
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Open navigation menu">
+            <svg xmlns="http://www.w3.org/2000/svg" height="28" viewBox="0 -960 960 960" width="28"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
+        </button>
+    </header>
+
+    <!-- Mobile Nav (Populated by JS) -->
+    <nav class="header-nav-mobile" id="mobile-nav" style="display: none;"></nav>
+
+    <div class="app-content-wrapper">
+        <main class="app-content">
+
+            <!-- NEW: Welcome Header -->
+            <div class="welcome-header">
+                <h1 class="page-title" id="welcome-title">👋 Welcome, Admin!</h1>
+                <p class="page-subtitle" id="welcome-subtitle">What would you like to do today?</p>
+            </div>
+
+            <!-- MODIFIED: Action Cards -->
+            <div class="dashboard-grid">
+                <!-- Card 1: View Pending Reports -->
+                <a href="/admin" class="action-card action-card--report">
+                    <div class="action-card-icon">
+                        <!-- Icon: List -->
+                        <svg xmlns="http://www.w3.org/2000/svg" height="32" viewBox="0 -960 960 960" width="32" fill="currentColor"><path d="M280-280h400v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80ZM160-120q-33 0-56.5-23.5T80-200v-560q0-33 23.5-56.5T160-840h640q33 0 56.5 23.5T880-760v560q0 33-23.5 56.5T800-120H160Z"/></svg>
+                    </div>
+                    <h3>View Pending Reports</h3>
+                    <p>Approve, reject, and assign new user reports.</p>
+                </a>
+                
+                <!-- Card 2: Track Reports -->
+                <a href="/manage_workers" class="action-card action-card--manage">
+                    <div class="action-card-icon">
+                        <!-- Icon: People -->
+                        <svg xmlns="http://www.w3.org/2000/svg" height="32" viewBox="0 -960 960 960" width="32" fill="currentColor"><path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Z"/></svg>
+                    </div>
+                    <h3>Manage Workers</h3>
+                    <p>View worker status and manage assignments for your zone.</p>
+                </a>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODIFIED: Footer -->
+    <footer class="app-footer">
+        &copy; 2025 Smart Garbage Reporting | Keep Your City Clean ♻️
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const token = localStorage.getItem('authToken');
+            
+            // --- 1. Auth Check ---
+            if (!token) {
+                window.location.href = '/login';
+                return; 
+            }
+
+            // --- 2. User Personalization ---
+            const username = localStorage.getItem('username');
+            const email = localStorage.getItem('userEmail'); 
+            
+            const welcomeTitle = document.getElementById('welcome-title');
+            
+            if (username) {
+                welcomeTitle.textContent = `👋 Welcome, ${username}!`;
+            }
+
+            // --- 3. Logout Function ---
+            const handleLogout = (e) => {
+                e.preventDefault();
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('username');
+                localStorage.removeItem('userEmail');
+                window.location.href = '/login';
+            };
+
+            // --- 4. Mobile Menu Toggle Logic ---
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const mobileNav = document.getElementById('mobile-nav');
+            const desktopNav = document.getElementById('desktop-nav');
+            
+            mobileMenuToggle.addEventListener('click', () => {
+                const isNavOpen = mobileNav.style.display === 'flex';
+                if (isNavOpen) {
+                    mobileNav.style.display = 'none';
+                } else {
+                    // Clone desktop nav links into mobile nav
+                    mobileNav.innerHTML = desktopNav.innerHTML;
+                    mobileNav.style.display = 'flex';
+                    // Add logout listener to the new mobile logout button
+                    mobileNav.querySelector('.btn-logout-header').addEventListener('click', handleLogout);
+                }
+            });
+
+            // --- 5. Logout Button Listeners ---
+            const logoutButtonHeader = document.getElementById('logout-button-header');
+            logoutButtonHeader.addEventListener('click', handleLogout);
+        });
+    </script>
+</body>
+</html>

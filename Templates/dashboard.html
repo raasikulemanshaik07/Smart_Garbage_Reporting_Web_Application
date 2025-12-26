@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Smart Garbage App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- 1. Global Design System --- */
+        :root {
+            --primary-green-dark: #006400;
+            --primary-green: #008000;
+            --accent-lime: #90D26D;
+            --accent-green-active: #2e7d32;
+            --accent-teal: #429E9D;
+            --background-start: #f8fafc;
+            --background-end: #eef7f0;
+            --card-background: #FFFFFF;
+            --text-dark: #212121;
+            --text-light: #5f6368;
+            --text-white: #FFFFFF;
+            --border-color: #E0E0E0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.12);
+            --font-family: 'Poppins', 'Roboto', sans-serif;
+            --border-radius: 20px;
+            --transition-speed: 0.3s ease;
+            /* --- ADDED FOR GAMIFICATION --- */
+            --star-color: #FFC107;
+            --trophy-color: #FFD700;
+        }
+
+        /* --- 2. Global Reset & Body --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { height: 100%; }
+        body {
+            font-family: var(--font-family);
+            background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M23.2,74.3c3.9,2.4,8.6,3.4,13.5,2.9s9.5-2.6,13.5-6.3c3.8-3.5,6.9-7.9,8.9-12.8s2.9-10.2,2.5-15.3c-0.6-5-2.3-9.8-5.1-14.1c-2.9-4.4-6.8-8.1-11.5-10.9C39.1,15,33.1,13.6,27,14c-6.3,0.4-12.4,2.5-17.8,6.1c-5.2,3.5-9.5,8.3-12.5,14c-3.1,5.9-4.8,12.5-4.8,19.2c0,6.9,1.6,13.6,4.7,19.7c3,6,7.5,11.2,13,15.2C15.1,72,19.2,73.4,23.2,74.3z' fill='%23008000' fill-opacity='0.03'/%3E%3C/svg%3E");
+            background-size: 300px;
+        }
+
+        /* --- 3. Main App Structure (Nav, Main, Footer) --- */
+        .app-header {
+            width: 100%;
+            background: linear-gradient(90deg, var(--primary-green-dark) 0%, var(--primary-green) 100%);
+            color: var(--text-white);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 0 2rem;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-brand {
+            font-size: 1.15rem;
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--text-white);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--text-white);
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all var(--transition-speed);
+        }
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+        .nav-link.active {
+            background-color: var(--accent-lime);
+            color: var(--primary-green-dark);
+            font-weight: 700;
+        }
+        .nav-link svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+        .btn-logout-header {
+            background: none;
+            border: none;
+            color: var(--text-white);
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            transition: background-color var(--transition-speed), transform var(--transition-speed);
+            margin-left: 1rem;
+        }
+        .btn-logout-header:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+        .btn-logout-header svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--text-white);
+            display: block;
+        }
+        .mobile-menu-toggle { display: none; }
+
+        .app-content-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        main.app-content {
+            width: 100%;
+            max-width: 1000px; /* Wider layout */
+            animation: fadeIn 0.4s var(--transition-speed) both;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .app-footer {
+            width: 100%;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            background-color: transparent;
+            border-top: 1px solid var(--border-color);
+            margin-top: 3rem;
+        }
+        
+        /* --- 7. Page-Specific: NEW Dashboard --- */
+        
+        /* Hero Section */
+        .hero-section {
+            padding: 4rem 1.5rem;
+            text-align: center;
+            background: var(--card-background);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .page-tag {
+            display: inline-block;
+            background-color: #E8F5E9; /* --status-approved-bg */
+            color: #2E7D32; /* --status-approved-text */
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .hero-title {
+            font-size: 2.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            font-weight: 400;
+            max-width: 550px;
+            margin: 0 auto 1.5rem auto;
+        }
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .btn {
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: all var(--transition-speed);
+        }
+        .btn-primary {
+            background-color: var(--primary-green);
+            color: var(--text-white);
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-green-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        .btn-secondary {
+            background-color: var(--card-background);
+            color: var(--primary-green);
+            border: 1px solid var(--border-color);
+        }
+        .btn-secondary:hover {
+            background-color: var(--background-light);
+            border-color: var(--primary-green);
+        }
+        
+        /* Stats Section */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            padding: 2.5rem 1.5rem;
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            /* --- MODIFIED --- */
+            margin: 0 auto 3rem auto; /* No longer overlaps */
+            box-shadow: var(--shadow);
+            max-width: 1000px;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-green);
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        /* Other Sections */
+        .content-section {
+            padding: 2rem 0;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto 2.5rem auto;
+        }
+
+        /* Mission Card */
+        .mission-card {
+            background: var(--card-background);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+        }
+        .mission-card p {
+            font-size: 1rem;
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+        .mission-card p:first-child {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+        
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .feature-card {
+            background: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            transition: all var(--transition-speed);
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-white);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        .feature-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+        .feature-card p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+        
+        /* --- ADDED: Gamification Section Wrapper --- */
+        .gamification-section-wrapper {
+            padding: 2.5rem 1.5rem;
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            margin: -40px auto 3rem auto; /* Overlap hero */
+            box-shadow: var(--shadow);
+            position: relative;
+            z-index: 10;
+            max-width: 1000px;
+        }
+        
+        /* --- ADDED: Gamification Grid CSS --- */
+        .gamification-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        
+        .gamification-card {
+            background: var(--card-background);
+            border-radius: var(--border-radius);
+            /* box-shadow: var(--shadow); */ /* No need for double shadow */
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .gamification-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* My Stats Card */
+        .my-stats-card .stats-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .my-stats-card .stat-label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        .my-stats-card .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-green);
+        }
+        
+        .my-stats-card .rank-row {
+            text-align: center;
+            margin-top: 12px;
+            padding: 16px;
+            background: var(--background-end);
+            border-radius: 12px;
+        }
+        .my-stats-card .rank-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        .my-stats-card .rank-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-green-dark);
+            margin-top: 4px;
+        }
+        
+        /* Leaderboard Card */
+        .leaderboard-list {
+            list-style: none;
+            padding-left: 0;
+            flex-grow: 1;
+        }
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+        .leaderboard-rank {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-light);
+            width: 40px;
+            text-align: center;
+        }
+        .leaderboard-rank.top-3 {
+            color: var(--trophy-color);
+            font-size: 1.3rem;
+        }
+        .leaderboard-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            flex-grow: 1;
+        }
+        .leaderboard-points {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-green);
+        }
+        /* --- END: Gamification Grid CSS --- */
+        
+        /* CTA Card */
+        .cta-card {
+            background: var(--gradient-hero);
+            color: var(--text-white);
+            text-align: center;
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        .cta-card h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .cta-card p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 500px;
+            margin: 0 auto 1.5rem auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-header { padding: 0 1rem; }
+            .header-nav { display: none; }
+            .mobile-menu-toggle {
+                display: block;
+                position: absolute;
+                right: 1rem; /* On the right side */
+                /* --- ADDED: Mobile menu button styling --- */
+                background: none; 
+                border: none; 
+                color: white; 
+                cursor: pointer;
+            }
+            .header-brand {
+                text-align: left;
+                flex: 1;
+            }
+            .stats-section {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            /* --- ADDED: Gamification responsive --- */
+            .gamification-grid {
+                grid-template-columns: 1fr;
+            }
+            .hero-title { font-size: 2.25rem; }
+            .section-title { font-size: 1.75rem; }
+        }
+
+        @media (max-width: 600px) {
+            .header-brand { font-size: 1.05rem; }
+            .page-title { font-size: 1.75rem; }
+            .page-subtitle { font-size: 1rem; }
+            .app-content-wrapper { padding: 0; } /* Remove padding for hero */
+            
+            /* --- MODIFIED: Make overlapping cards full-width on mobile --- */
+            .stats-section { 
+                margin-left: 1rem; 
+                margin-right: 1rem;
+                margin-top: 1.5rem; /* Add space since it no longer overlaps */
+            }
+            .gamification-section-wrapper {
+                margin-left: 1rem; 
+                margin-right: 1rem;
+                margin-top: -40px; /* Keep overlap */
+            }
+        }
+        
+        /* Mobile Nav */
+        .header-nav-mobile {
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            top: 64px;
+            left: 0;
+            width: 100%;
+            background: var(--card-background);
+            box-shadow: var(--shadow);
+            animation: slideDown 0.3s ease-out;
+            padding: 1rem 0;
+            z-index: 99;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .header-nav-mobile .nav-link {
+            
+            color: var(--text-dark); /* Dark text on light bg */
+            padding: 1rem 1.5rem;
+            border-radius: 0;
+        }
+        .header-nav-mobile .nav-link.active {
+            background-color: var(--background-light);
+            color: var(--primary-green);
+        }
+        .header-nav-mobile .btn-logout-header {
+            margin: 1rem 1.5rem 0 1.5rem;
+            background: var(--primary-green);
+            color: var(--text-white);
+            padding: 12px;
+            border-radius: 8px;
+        }
+        .header-nav-mobile .btn-logout-header:hover {
+            background: var(--primary-green-dark);
+        }
+    </style>
+</head>
+<body id="body">
+    
+    <header class="app-header">
+        <a href="/dashboard" class="header-brand">♻️ Smart Garbage Reporting</a>
+        
+        <!-- Desktop Navigation -->
+        <nav class="header-nav" id="desktop-nav">
+            <a href="/dashboard" class="nav-link active" title="Dashboard">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="20"><path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80q-33 0-56.5-23.5T80-200v-480q0-21 10-38.5t27-28.5l360-280q18-14 43-14t43 14l360 280q17 11 27 28.5t10 38.5v480q0 33-23.5 56.5T800-120H160Zm320-350Z"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="/report" class="nav-link" title="Report Waste">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="20"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+                <span>Report Waste</span>
+            </a>
+            <a href="/track" class="nav-link" title="Track Status">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="20"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v280q-51-32-108-48.5T620-560H340v80h280q-23 10-44.5 22.5T530-430q-47 31-88.5 71T360-240v120H200v-120h80v-163q-10-5-20-8.5T240-500q-50 0-95 18.5T66-430q-26 23-41 53t-15 67v170q0 33 23.5 56.5T120-100h120v-20ZM340-240q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47q-66 0-113-47t-47-113Zm80 0q0 25 18 42.5t42 17.5q24 0 42-17.5t18-42.5q0-25-18-42.5T500-300q-24 0-42 17.5T420-240Z"/></svg>
+                <span>Track Status</span>
+            </a>
+            <a href="/awareness" class="nav-link" title="Awareness">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="20"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-82q26-10 40-33t14-51q0-27-14-50t-40-33q-26 10-40 33t-14 50q0 28 14 51t40 33Zm-40-198h80v-360h-80v360Zm40 300q142 0 241-99t99-241q0-142-99-241t-241-99q-142 0-241 99t-99 241q0 142 99 241t241 99Z"/></svg>
+                <span>Awareness</span>
+            </a>
+            <a href="/profile" class="nav-link" title="Profile">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="20"><path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Z"/></svg>
+                <span>Profile</span>
+            </a>
+            
+            <button class="btn-logout-header" id="logout-button-header" title="Logout">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/></svg>
+            </button>
+        </nav>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Open navigation menu">
+            <svg xmlns="http://www.w3.org/2000/svg" height="28" viewBox="0 -960 960 960" width="28"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
+        </button>
+    </header>
+
+    <!-- Mobile Navigation (Hidden by default) -->
+    <nav class="header-nav-mobile" id="mobile-nav" style="display: none;"></nav>
+
+    <!-- MAIN CONTENT START -->
+    
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <span class="page-tag">Making Cities Cleaner, Together</span>
+        <h1 class="hero-title" id="welcome-title">Report Waste Issues, Create Clean Cities</h1>
+        <p class="hero-subtitle" id="welcome-subtitle">
+            Our Web connects citizens with municipal services to quickly address
+            overflowing bins, illegal dumping, and hygiene issues in your neighborhood.
+        </p>
+        <div class="hero-actions">
+            <a href="/report" class="btn btn-primary">Report Waste Issue</a>
+            <a href="/track" class="btn btn-secondary">Track Your Complaint</a>
+        </div>
+    </section>
+
+    <div class="app-content-wrapper">
+        <main class="app-content">
+
+            <!-- --- MOVED: Gamification Section --- -->
+            <section class="gamification-section-wrapper" id="gamification-section">
+                <h2 class="section-title" style="text-align: left; margin-bottom: 1.5rem;">Your Impact & Leaderboard</h2>
+                <p class="section-subtitle" style="text-align: left; max-width: none; margin-bottom: 2rem;">
+                    Earn 10 points for every approved report and see how you stack up against other clean city heroes!
+                </p>
+                
+                <div class="gamification-grid">
+                    <!-- My Stats Card -->
+                    <div class="gamification-card my-stats-card">
+                        <h3>⭐ Your Stats</h3>
+                        <div class="stats-row">
+                            <span class="stat-label">Your Points</span>
+                            <span class="stat-value" id="user-points">...</span>
+                        </div>
+                        <div class="stats-row">
+                            <span class="stat-label">Reports Cleaned</span>
+                            <span class="stat-value" id="user-reports">...</span>
+                        </div>
+                        <div class="rank-row">
+                            <span class="rank-label">Your City Rank</span>
+                            <div class="rank-value" id="user-rank">...</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Leaderboard Card -->
+                    <div class="gamification-card leaderboard-card">
+                        <h3>🏆 City Leaderboard</h3>
+                        <ol class="leaderboard-list" id="leaderboard-list">
+                            <!-- JS will populate this -->
+                            <li style="text-align: center; color: var(--text-light); padding: 1rem 0;">Loading...</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+            <!-- --- END: Gamification Section --- -->
+
+            <!-- Stats Section -->
+            <section class="stats-section">
+                <div class="stat-item">
+                    <span class="stat-number" id="stats-resolved">...</span>
+                    <span class="stat-label">Complaints Resolved</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="stats-success">...</span>
+                    <span class="stat-label">Success Rate</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="stats-response">...</span>
+                    <span class="stat-label">Avg Response Time</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="stats-cities">...</span>
+                    <span class="stat-label">Cities Covered</span>
+                </div>
+            </section>
+
+            <!-- Our Mission Section -->
+            <section class="content-section">
+                <div class="mission-card">
+                    <h2 class="section-title" style="text-align: left; margin-bottom: 1.5rem;">Our Mission</h2>
+                    <p>
+                        To empower every citizen with a simple, effective tool to report waste issues and collaborate with municipal authorities for a cleaner, healthier environment.
+                    </p>
+                    <p>
+                        We believe that clean cities start with active participation. SmartWaste bridges the gap between citizens and cleaning services, ensuring faster response times, transparent tracking, and accountable waste management across urban areas.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Why Choose Us Section -->
+            <section class="content-section">
+                <h2 class="section-title">Why Choose SmartWaste?</h2>
+                <p class="section-subtitle">
+                    A comprehensive platform designed to make waste reporting seamless and municipal response efficient.
+                </p>
+                <div class="features-grid">
+                    <!-- Feature 1 -->
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background: #29B6F6;">📷</div>
+                        <h3>Easy Reporting</h3>
+                        <p>Upload a photo, add location, and submit your waste complaint in seconds.</p>
+                    </div>
+                    <!-- Feature 2 -->
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background: #66BB6A;">📊</div>
+                        <h3>Real-Time Tracking</h3>
+                        <p>Monitor your complaint status from pending to resolved with live updates.</p>
+                    </div>
+                    <!-- Feature 3 -->
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background: #AB47BC;">👥</div>
+                        <h3>Community Action</h3>
+                        <p>Join thousands of citizens working together to keep our cities clean.</p>
+                    </div>
+                    <!-- Feature 4 -->
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background: #FFA726;">🔔</div>
+                        <h3>Instant Notifications</h3>
+                        <p>Get email alerts when your complaint is assigned, in progress, or resolved.</p>
+                    </div>
+                    <!-- Feature 5 -->
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background: #EF5350;">📍</div>
+                        <h3>Location-Based</h3>
+                        <p>Auto-detect your location or manually select the exact waste issue spot.</p>
+                    </div>
+                    <!-- Feature 6 -->
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background: #5C6BC0;">⭐</div>
+                        <h3>Rate & Review</h3>
+                        <p>Provide feedback on cleaning quality to improve municipal services.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Call to Action -->
+            <section class="content-section">
+                <div class="cta-card">
+                    <h2 style="color: #212121;">Ready to Make a Difference?</h2>
+                    <p style="color: #5f6368;">Join thousands of active citizens reporting waste issues and helping create cleaner, healthier neighborhoods.</p>
+                    <a href="/report" class="btn" style="background: var(--text-white); color: var(--primary-green); margin-top: 1.5rem;">Report Your First Issue</a>
+                </div>
+            </section>
+
+        </main>
+    </div>
+    <!-- MAIN CONTENT END -->
+
+    <footer class="app-footer">
+        &copy; 2025 Smart Garbage Reporting | Keep Your City Clean ♻️
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const token = localStorage.getItem('authToken');
+            
+            // --- 1. Auth Check & Logout Function ---
+            const handleLogout = (e) => {
+                e.preventDefault();
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('username');
+                localStorage.removeItem('userEmail');
+                window.location.href = '/login';
+            };
+            
+            if (!token) {
+                handleLogout(new Event('auth_check')); // Call logout logic if no token
+                return; 
+            }
+
+            // --- 2. User Personalization ---
+            const username = localStorage.getItem('username');
+            const welcomeTitle = document.getElementById('welcome-title');
+            
+            if (username) {
+                welcomeTitle.textContent = `👋 Hello, ${username}!`;
+            }
+            
+            // --- 3. Mobile Menu Toggle Logic ---
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const mobileNav = document.getElementById('mobile-nav');
+            const desktopNav = document.getElementById('desktop-nav');
+            
+            if (mobileMenuToggle) { // Check if the toggle exists
+                mobileMenuToggle.addEventListener('click', () => {
+                    const isNavOpen = mobileNav.style.display === 'flex';
+                    if (isNavOpen) {
+                        mobileNav.style.display = 'none';
+                    } else {
+                        mobileNav.innerHTML = desktopNav.innerHTML;
+                        mobileNav.style.display = 'flex';
+                        // Add logout listener to the new mobile logout button
+                        mobileNav.querySelector('.btn-logout-header').addEventListener('click', handleLogout);
+                    }
+                });
+            }
+
+            // --- 4. Desktop Logout Button ---
+            const logoutButton = document.getElementById('logout-button-header');
+            if (logoutButton) { // Check if the button exists
+                logoutButton.addEventListener('click', handleLogout);
+            }
+
+            // --- 5. Fetch Dashboard Stats ---
+            const fetchStats = async () => {
+                try {
+                    const response = await fetch('/api/dashboard-stats', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                         if (response.status === 401) { // Unauthorized
+                            handleLogout(new Event('auth_check_fail'));
+                        }
+                        throw new Error('Could not load stats');
+                    }
+                    
+                    const stats = await response.json();
+                    
+                    // Animate numbers
+                    animateValue("stats-resolved", 0, stats.complaints_resolved || 0, 1500, "+");
+                    animateValue("stats-success", 0, stats.success_rate || 0, 1500, "%");
+                    animateValue("stats-response", 0, stats.avg_response_time || 0, 1500, "hrs");
+                    animateValue("stats-cities", 0, stats.cities_covered || 0, 1500, "+");
+
+                } catch (error) {
+                    console.error("Failed to fetch stats:", error);
+                    // Set to 0 if fetch fails
+                    document.getElementById('stats-resolved').textContent = "0+";
+                    document.getElementById('stats-success').textContent = "0%";
+                    document.getElementById('stats-response').textContent = "N/A";
+                    document.getElementById('stats-cities').textContent = "0+";
+                }
+            };
+            
+            // --- 6. NEW: Fetch Gamification Stats ---
+            const fetchGamificationStats = async () => {
+                try {
+                    // Fetch user's personal stats
+                    const userStatsResponse = await fetch('/api/user/stats', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!userStatsResponse.ok) throw new Error('Could not load user stats');
+                    const userData = await userStatsResponse.json();
+                    
+                    document.getElementById('user-points').textContent = userData.points;
+                    document.getElementById('user-reports').textContent = userData.report_count;
+
+                    // Fetch the leaderboard
+                    const leaderboardResponse = await fetch('/api/leaderboard', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!leaderboardResponse.ok) throw new Error('Could not load leaderboard');
+                    const leaderboardData = await leaderboardResponse.json();
+
+                    // Populate user's rank
+                    document.getElementById('user-rank').textContent = `#${leaderboardData.user_rank || 'N/A'}`;
+                    
+                    // Populate leaderboard list
+                    const listElement = document.getElementById('leaderboard-list');
+                    listElement.innerHTML = ''; // Clear "Loading..."
+                    
+                    if (!leaderboardData.leaderboard || leaderboardData.leaderboard.length === 0) {
+                        listElement.innerHTML = '<p style="color: var(--text-light); font-size: 0.9rem; text-align: center;">Be the first to report!</p>';
+                        return;
+                    }
+
+                    leaderboardData.leaderboard.forEach((user, index) => {
+                        const rank = index + 1;
+                        let rankClass = 'leaderboard-rank';
+                        let rankIcon = rank;
+                        
+                        if (rank === 1) { rankClass += ' top-3'; rankIcon = '🥇'; }
+                        else if (rank === 2) { rankClass += ' top-3'; rankIcon = '🥈'; }
+                        else if (rank === 3) { rankClass += ' top-3'; rankIcon = '🥉'; }
+                        
+                        const item = document.createElement('li');
+                        item.className = 'leaderboard-item';
+                        item.innerHTML = `
+                            <span class="${rankClass}">${rankIcon}</span>
+                            <span class="leaderboard-name">${user.username}</span>
+                            <span class="leaderboard-points">${user.points} pts</span>
+                        `;
+                        listElement.appendChild(item);
+                    });
+
+                } catch (error) {
+                    console.error('Failed to fetch gamification stats:', error);
+                    const gamificationSection = document.getElementById('gamification-section');
+                    if (gamificationSection) {
+                        gamificationSection.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 2rem;">Could not load gamification features.</p>';
+                    }
+                }
+            };
+            
+            // Helper function to animate the stat numbers
+            function animateValue(id, start, end, duration, suffix = "") {
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    let currentValue = Math.floor(progress * (end - start) + start);
+                    
+                    if (id === "stats-success" || id === "stats-response") {
+                        // Handle decimals
+                        currentValue = (progress * (end - start) + start).toFixed(1);
+                    }
+                    
+                    const el = document.getElementById(id);
+                    if (el) { // Check if element exists before setting
+                        el.innerHTML = `${currentValue}${suffix}`;
+                    }
+                    
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    } else {
+                        // Ensure final value is exact
+                        const finalEl = document.getElementById(id);
+                        if (finalEl) {
+                            if (id === "stats-success" || id === "stats-response") {
+                                 finalEl.innerHTML = `${end.toFixed(1)}${suffix}`;
+                            } else {
+                                 finalEl.innerHTML = `${end}${suffix}`;
+                            }
+                        }
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+
+            fetchStats(); // Call the function to load stats
+            fetchGamificationStats(); // --- ADDED: Call the new function ---
+        });
+    </script>
+</body>
+</html>

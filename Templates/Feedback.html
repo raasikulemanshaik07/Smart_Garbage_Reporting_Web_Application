@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Give Feedback - Smart Garbage App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-green-dark: #006400;
+            --primary-green: #008000;
+            --background-start: #f8fafc;
+            --background-end: #eef7f0;
+            --card-background: #FFFFFF;
+            --text-dark: #212121;
+            --text-light: #5f6368;
+            --text-white: #FFFFFF;
+            --border-color: #E0E0E0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --font-family: 'Poppins', 'Roboto', sans-serif;
+            --border-radius: 20px;
+            --transition-speed: 0.3s ease;
+            --error-red: #D32F2F;
+            --success-green: #2E7D32;
+            --star-color: #FFC107;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { height: 100%; }
+        body {
+            font-family: var(--font-family);
+            background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100%;
+            padding: 1rem;
+        }
+        .app-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
+            max-width: 450px;
+        }
+        main.app-content {
+            width: 100%;
+            padding: 24px 0;
+            animation: fadeIn 0.4s var(--transition-speed) both;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card {
+            background: var(--card-background);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 32px;
+            margin-bottom: 16px;
+            width: 100%;
+        }
+        .app-footer {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+        .feedback-form { text-align: center; }
+        .feedback-icon {
+            font-size: 3rem;
+            color: var(--accent-green);
+            margin-bottom: 0.5rem;
+        }
+        .feedback-form h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+        .feedback-form p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .star-rating {
+            display: inline-block;
+            direction: rtl;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .star-rating input[type="radio"] { display: none; }
+        .star-rating label {
+            color: var(--border-color);
+            cursor: pointer;
+            transition: color 0.2s;
+            padding: 0 2px;
+        }
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input[type="radio"]:checked ~ label {
+            color: var(--star-color);
+        }
+        .form-group { text-align: left; margin-top: 1rem; }
+        .form-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-light);
+            margin-bottom: 8px;
+            display: block;
+        }
+        .form-textarea {
+            width: 100%;
+            padding: 14px;
+            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: var(--font-family);
+            min-height: 80px;
+            resize: vertical;
+        }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            margin-top: 1rem;
+        }
+        .btn-primary {
+            background-color: var(--primary-green);
+            color: var(--text-white);
+        }
+        .btn-primary:hover:not([disabled]) {
+            background-color: var(--primary-green-dark);
+        }
+        .btn[disabled] {
+            background-color: #BDBDBD;
+            cursor: not-allowed;
+        }
+        .message-box {
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-top: 16px;
+            text-align: center;
+            display: none;
+        }
+        .error-message {
+            color: var(--error-red);
+            background-color: rgba(211, 47, 47, 0.1);
+        }
+        .success-message {
+            color: var(--success-green);
+            background-color: rgba(46, 125, 50, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-screen">
+        <main class="app-content">
+            <div class="card feedback-form">
+                <div class="feedback-icon">✅</div>
+                <h3>Cleanup Complete!</h3>
+                <p>Thank you for helping keep your city clean. Please rate the service.</p>
+                <form id="feedback-form">
+                    <div class="star-rating">
+                        <input type="radio" id="star5" name="rating" value="5" required><label for="star5">★</label>
+                        <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+                        <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+                        <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+                        <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="suggestions">Suggestions (Optional)</label>
+                        <textarea id="suggestions" name="suggestions" class="form-textarea" rows="3" placeholder="e.g., The team was very fast..."></textarea>
+                    </div>
+                    <button type="submit" id="submit-button" class="btn btn-primary">Submit Feedback</button>
+                </form>
+                <div id="message-box" class="message-box"></div>
+            </div>
+        </main>
+        
+        <footer class="app-footer">
+            &copy; 2025 Smart Garbage Reporting | Keep Your City Clean ♻️
+        </footer>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+            
+            const feedbackForm = document.getElementById('feedback-form');
+            const submitButton = document.getElementById('submit-button');
+            const messageBox = document.getElementById('message-box');
+            
+            // Get report_id from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const reportId = urlParams.get('report_id');
+
+            if (!reportId) {
+                showMessage('Error: No report ID specified. Please go back to your reports.', 'error');
+                submitButton.disabled = true;
+            }
+
+            const showMessage = (message, type) => {
+                messageBox.textContent = message;
+                messageBox.className = `message-box ${type}-message`;
+                messageBox.style.display = "block";
+            };
+
+            feedbackForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const formData = new FormData(feedbackForm);
+                const rating = formData.get('rating');
+                const suggestion = formData.get('suggestions');
+
+                if (!rating) {
+                    showMessage('Please select a star rating.', 'error');
+                    return;
+                }
+
+                submitButton.disabled = true;
+                submitButton.textContent = "Submitting...";
+                messageBox.style.display = "none";
+                
+                try {
+                    const response = await fetch('/api/feedback', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            report_id: parseInt(reportId),
+                            rating: parseInt(rating),
+                            suggestion: suggestion
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.msg || 'An error occurred.');
+                    }
+                    
+                    showMessage(data.msg, 'success');
+                    setTimeout(() => {
+                        window.location.href = '/track'; // Go back to track page
+                    }, 2000);
+
+                } catch (error) {
+                    showMessage(error.message, 'error');
+                    submitButton.disabled = false;
+                    submitButton.textContent = "Submit Feedback";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
